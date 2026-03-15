@@ -1,0 +1,23 @@
+{
+  "name": "Georgi Naydenov",
+  "title": "Senior AI Business Analyst at SoftServe",
+  "subtitle": "Portfolio & Knowledge Library",
+  "bio": "Welcome to my professional portfolio. Here, you will find various things I have created throughout my journey.",
+  "certifications": ["CBAP®", "PMP®", "TOGAF® EA Practitioner"],
+  "categoryDescriptions": {
+    "artifacts": "A diverse collection including AI Prototypes (Claude & NotebookLM), Study Guides (TOGAF®, CBAP®, Scrum.org), and technical Proof of Concepts.",
+    "articles": "In-depth publications exploring AI strategy, addressing organizational dysfunctions, and providing frameworks for digital transformation.",
+    "posts": "Curated thoughts and updates on AI ethics, handling LLM hallucinations, and making sense of news in the AI world.",
+    "appearances": "Check out my videos and interviews."
+  },
+  "links": {
+    "linkedin": "https://www.linkedin.com/in/georgi-naydenov/",
+    "github": "https://github.com/GeorgiNaydenov",
+    "cv": "https://app.enhancv.com/share/9cce06db"
+  },
+  "meta": {
+    "ogTitle": "Georgi Naydenov — Portfolio & Knowledge Library",
+    "ogDescription": "AI Prototypes, Study Guides, Articles, and Public Appearances from a Senior AI Business Analyst.",
+    "ogImage": "/assets/og/default.png"
+  }
+}

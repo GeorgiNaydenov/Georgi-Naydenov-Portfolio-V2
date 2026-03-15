@@ -1,0 +1,50 @@
+{
+  "categories": [
+    {
+      "id": "artifacts",
+      "label": "Artifacts",
+      "icon": "Bot",
+      "colorAccent": "indigo"
+    },
+    {
+      "id": "articles",
+      "label": "Articles",
+      "icon": "FileText",
+      "colorAccent": "emerald"
+    },
+    {
+      "id": "posts",
+      "label": "Posts",
+      "icon": "Linkedin",
+      "colorAccent": "blue"
+    },
+    {
+      "id": "appearances",
+      "label": "Public Appearances",
+      "icon": "Video",
+      "colorAccent": "purple"
+    }
+  ],
+  "sections": [
+    { "id": "all", "label": "All Artifacts" },
+    { "id": "ai-prototypes", "label": "AI Prototypes" },
+    { "id": "study-guides", "label": "Study Guides" },
+    { "id": "proof-of-concepts", "label": "Proof of Concepts" }
+  ],
+  "subCategoryLabels": {
+    "togaf-ea": "TOGAF® Ent. Architecture",
+    "togaf-ba": "TOGAF® Bus. Architecture",
+    "cbap": "IIBA® CBAP Prep",
+    "technical": "Claude Skills Deep Dive",
+    "agile": "Agile Methodologies",
+    "scrum": "Scrum.org Prep",
+    "research": "Deep Research",
+    "ai-architecture": "AI Architecture"
+  },
+  "sectionTopicLabels": {
+    "all": "All Topics",
+    "ai-prototypes": "All Prototypes",
+    "study-guides": "All Guides",
+    "proof-of-concepts": "All POCs"
+  }
+}

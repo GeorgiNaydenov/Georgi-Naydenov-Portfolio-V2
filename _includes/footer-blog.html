@@ -1,0 +1,13 @@
+<footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-8 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+        <p class="text-slate-500 dark:text-slate-400 text-sm">
+            © {{ 'now' | date: "%Y" }} Georgi Naydenov. All rights reserved.
+        </p>
+        <div class="flex items-center justify-center gap-6 mt-3">
+            <a href="{{ '/' | relative_url }}" class="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Portfolio</a>
+            <a href="{{ '/blog/' | relative_url }}" class="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Blog</a>
+            <a href="{{ site.author.linkedin }}" target="_blank" rel="noopener noreferrer" class="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">LinkedIn</a>
+            <a href="{{ site.author.github }}" target="_blank" rel="noopener noreferrer" class="text-xs text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">GitHub</a>
+        </div>
+    </div>
+</footer>

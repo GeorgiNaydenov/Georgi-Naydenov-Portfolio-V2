@@ -1,0 +1,10 @@
+<!-- Additional head content for blog pages -->
+<meta name="author" content="{{ site.author.name }}">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = { darkMode: 'class' }
+    // Apply dark mode based on system preference
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+    }
+</script>

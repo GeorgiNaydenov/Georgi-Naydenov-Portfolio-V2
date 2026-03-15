@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" role="img" aria-labelledby="gslides-title">
+  <title id="gslides-title">Google Slides</title>
+  <path d="M14 2H7C5.9 2 5 2.9 5 4v16c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V8l-5-6z" fill="#f9ab00"/>
+  <path d="M14 2l5 6h-5V2z" fill="#fcd94b"/>
+  <rect x="8" y="11" width="8" height="6" rx="0.5" fill="white" fill-opacity="0.9"/>
+  <path d="M10.5 12.5h3M10.5 14h3M10.5 15.5h2" stroke="#f9ab00" stroke-width="0.8" stroke-linecap="round"/>
+</svg>

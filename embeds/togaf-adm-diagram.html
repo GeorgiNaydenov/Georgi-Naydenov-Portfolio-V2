@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOGAF ADM Cycle — Georgi Naydenov Portfolio</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --bg2: #f8fafc;
+            --text: #0f172a;
+            --text2: #475569;
+            --border: #e2e8f0;
+            --accent: #2563eb;
+            --phase-fill: #eff6ff;
+            --phase-stroke: #bfdbfe;
+            --phase-text: #1e40af;
+            --center-fill: #fef3c7;
+            --center-stroke: #fbbf24;
+            --panel-bg: #ffffff;
+            --shadow: 0 4px 24px rgba(0,0,0,0.1);
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0f172a; --bg2: #1e293b; --text: #f1f5f9; --text2: #94a3b8;
+                --border: #334155; --phase-fill: #1e3a5f; --phase-stroke: #3b82f6;
+                --phase-text: #93c5fd; --center-fill: #451a03; --center-stroke: #f59e0b;
+                --panel-bg: #1e293b; --shadow: 0 4px 24px rgba(0,0,0,0.4);
+            }
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg); color: var(--text); font-family: system-ui,-apple-system,sans-serif; min-height: 100vh; }
+        h1 { font-size: 1.1rem; font-weight: 700; text-align: center; padding: 16px; color: var(--text); border-bottom: 1px solid var(--border); }
+        #diagram-wrap { display: flex; justify-content: center; align-items: center; padding: 16px; }
+        svg#adm { width: 100%; max-width: 560px; height: auto; }
+        .phase { cursor: pointer; transition: all 0.2s; }
+        .phase circle { fill: var(--phase-fill); stroke: var(--phase-stroke); stroke-width: 2; transition: all 0.2s; }
+        .phase:hover circle, .phase.active circle { fill: var(--accent); stroke: var(--accent); }
+        .phase:hover text, .phase.active text { fill: white; }
+        .phase text { fill: var(--phase-text); font-size: 11px; font-weight: 600; text-anchor: middle; pointer-events: none; }
+        .center-hub { cursor: pointer; }
+        .center-hub ellipse { fill: var(--center-fill); stroke: var(--center-stroke); stroke-width: 2; transition: all 0.2s; }
+        .center-hub:hover ellipse { fill: var(--center-stroke); }
+        .center-hub text { fill: var(--text); font-size: 9px; font-weight: 600; text-anchor: middle; pointer-events: none; }
+        .connector { stroke: var(--border); stroke-width: 1.5; stroke-dasharray: 4 3; fill: none; }
+        /* Detail panel */
+        #panel { display: none; margin: 0 16px 16px; padding: 20px; background: var(--panel-bg); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
+        #panel.visible { display: block; }
+        #panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        #panel-title { font-size: 1rem; font-weight: 700; color: var(--accent); }
+        #panel-close { background: none; border: none; color: var(--text2); font-size: 1.2rem; cursor: pointer; padding: 4px 8px; border-radius: 6px; }
+        #panel-close:hover { background: var(--bg2); }
+        #panel-desc { font-size: 0.875rem; color: var(--text2); line-height: 1.6; margin-bottom: 12px; }
+        #panel-deliverables h4 { font-size: 0.8rem; font-weight: 600; color: var(--text); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+        #panel-deliverables ul { list-style: disc; padding-left: 18px; font-size: 0.8rem; color: var(--text2); line-height: 1.6; }
+        #panel-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; padding: 8px 14px; background: var(--accent); color: white; border-radius: 8px; text-decoration: none; font-size: 0.8rem; font-weight: 600; transition: opacity 0.2s; }
+        #panel-link:hover { opacity: 0.85; }
+        /* Mobile: vertical list */
+        @media (max-width: 600px) {
+            #diagram-wrap { display: none; }
+            #mobile-list { display: block; }
+        }
+        @media (min-width: 601px) {
+            #mobile-list { display: none; }
+        }
+        #mobile-list { padding: 12px; }
+        .mobile-phase { padding: 12px 16px; margin-bottom: 8px; border: 1px solid var(--border); border-radius: 10px; cursor: pointer; background: var(--bg2); transition: background 0.2s; }
+        .mobile-phase:hover, .mobile-phase.active { background: var(--accent); color: white; }
+        .mobile-phase span { font-size: 0.85rem; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <h1>TOGAF ADM Cycle</h1>
+    <div id="diagram-wrap">
+        <svg id="adm" viewBox="0 0 560 520" aria-label="TOGAF Architecture Development Method Cycle Diagram">
+            <!-- Connectors (outer ring arrows) -->
+            <defs>
+                <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L6,3 z" fill="#94a3b8"/>
+                </marker>
+            </defs>
+
+            <!-- Phase nodes arranged in a circle, r=190 from center (280,270) -->
+            <!-- Preliminary: top -->
+            <g class="phase" id="p-prelim" onclick="selectPhase('prelim')" tabindex="0" role="button" aria-label="Preliminary Phase">
+                <circle cx="280" cy="58" r="44"/>
+                <text x="280" y="53" dy="0.35em">Preliminary</text>
+                <text x="280" y="67">Phase</text>
+            </g>
+            <!-- A: Architecture Vision: upper right -->
+            <g class="phase" id="p-a" onclick="selectPhase('a')" tabindex="0" role="button" aria-label="Phase A: Architecture Vision">
+                <circle cx="430" cy="120" r="44"/>
+                <text x="430" y="115">A: Arch.</text>
+                <text x="430" y="129">Vision</text>
+            </g>
+            <!-- B: Business Architecture: right -->
+            <g class="phase" id="p-b" onclick="selectPhase('b')" tabindex="0" role="button" aria-label="Phase B: Business Architecture">
+                <circle cx="502" cy="270" r="44"/>
+                <text x="502" y="265">B: Business</text>
+                <text x="502" y="279">Arch.</text>
+            </g>
+            <!-- C: IS Architecture: lower right -->
+            <g class="phase" id="p-c" onclick="selectPhase('c')" tabindex="0" role="button" aria-label="Phase C: Information Systems Architecture">
+                <circle cx="430" cy="420" r="44"/>
+                <text x="430" y="415">C: Info</text>
+                <text x="430" y="429">Systems</text>
+            </g>
+            <!-- D: Technology: bottom right -->
+            <g class="phase" id="p-d" onclick="selectPhase('d')" tabindex="0" role="button" aria-label="Phase D: Technology Architecture">
+                <circle cx="310" cy="480" r="44"/>
+                <text x="310" y="475">D: Tech.</text>
+                <text x="310" y="489">Arch.</text>
+            </g>
+            <!-- E: Opportunities: bottom left -->
+            <g class="phase" id="p-e" onclick="selectPhase('e')" tabindex="0" role="button" aria-label="Phase E: Opportunities and Solutions">
+                <circle cx="160" cy="460" r="44"/>
+                <text x="160" y="455">E: Opp.</text>
+                <text x="160" y="469">&amp; Solutions</text>
+            </g>
+            <!-- F: Migration: lower left -->
+            <g class="phase" id="p-f" onclick="selectPhase('f')" tabindex="0" role="button" aria-label="Phase F: Migration Planning">
+                <circle cx="70" cy="350" r="44"/>
+                <text x="70" y="345">F: Migration</text>
+                <text x="70" y="359">Planning</text>
+            </g>
+            <!-- G: Governance: left -->
+            <g class="phase" id="p-g" onclick="selectPhase('g')" tabindex="0" role="button" aria-label="Phase G: Implementation Governance">
+                <circle cx="70" cy="200" r="44"/>
+                <text x="70" y="195">G: Impl.</text>
+                <text x="70" y="209">Governance</text>
+            </g>
+            <!-- H: Change: upper left -->
+            <g class="phase" id="p-h" onclick="selectPhase('h')" tabindex="0" role="button" aria-label="Phase H: Architecture Change Management">
+                <circle cx="160" cy="100" r="44"/>
+                <text x="160" y="95">H: Change</text>
+                <text x="160" y="109">Mgmt.</text>
+            </g>
+
+            <!-- Center hub: Requirements Management -->
+            <g class="center-hub" id="p-req" onclick="selectPhase('req')" tabindex="0" role="button" aria-label="Requirements Management">
+                <ellipse cx="280" cy="270" rx="72" ry="46" />
+                <text x="280" y="264">Requirements</text>
+                <text x="280" y="276">Management</text>
+            </g>
+
+            <!-- Spoke connectors -->
+            <line x1="280" y1="102" x2="280" y2="224" class="connector"/>
+            <line x1="399" y1="148" x2="315" y2="236" class="connector"/>
+            <line x1="460" y1="270" x2="352" y2="270" class="connector"/>
+            <line x1="399" y1="393" x2="326" y2="300" class="connector"/>
+            <line x1="280" y1="436" x2="280" y2="316" class="connector"/>
+            <line x1="188" y1="429" x2="247" y2="302" class="connector"/>
+            <line x1="107" y1="328" x2="218" y2="286" class="connector"/>
+            <line x1="107" y1="208" x2="218" y2="260" class="connector"/>
+            <line x1="195" y1="123" x2="245" y2="242" class="connector"/>
+        </svg>
+    </div>
+
+    <!-- Mobile list -->
+    <div id="mobile-list">
+        <div class="mobile-phase" onclick="selectPhase('prelim')"><span>🔲 Preliminary Phase</span></div>
+        <div class="mobile-phase" onclick="selectPhase('a')"><span>A — Architecture Vision</span></div>
+        <div class="mobile-phase" onclick="selectPhase('b')"><span>B — Business Architecture</span></div>
+        <div class="mobile-phase" onclick="selectPhase('c')"><span>C — Information Systems Architecture</span></div>
+        <div class="mobile-phase" onclick="selectPhase('d')"><span>D — Technology Architecture</span></div>
+        <div class="mobile-phase" onclick="selectPhase('e')"><span>E — Opportunities & Solutions</span></div>
+        <div class="mobile-phase" onclick="selectPhase('f')"><span>F — Migration Planning</span></div>
+        <div class="mobile-phase" onclick="selectPhase('g')"><span>G — Implementation Governance</span></div>
+        <div class="mobile-phase" onclick="selectPhase('h')"><span>H — Architecture Change Management</span></div>
+        <div class="mobile-phase" onclick="selectPhase('req')"><span>⚙️ Requirements Management</span></div>
+    </div>
+
+    <!-- Detail panel -->
+    <div id="panel" role="region" aria-live="polite">
+        <div id="panel-header">
+            <div id="panel-title"></div>
+            <button id="panel-close" onclick="closePanel()" aria-label="Close panel">✕</button>
+        </div>
+        <p id="panel-desc"></p>
+        <div id="panel-deliverables"></div>
+        <a id="panel-link" href="#" target="_blank" rel="noopener">
+            View TOGAF Artifacts in Portfolio →
+        </a>
+    </div>
+
+    <script>
+        // Theme from query param
+        const params = new URLSearchParams(location.search);
+        if (params.get('theme') === 'dark') {
+            document.documentElement.style.setProperty('--bg', '#0f172a');
+            document.documentElement.style.setProperty('--bg2', '#1e293b');
+            document.documentElement.style.setProperty('--text', '#f1f5f9');
+            document.documentElement.style.setProperty('--text2', '#94a3b8');
+            document.documentElement.style.setProperty('--border', '#334155');
+            document.documentElement.style.setProperty('--phase-fill', '#1e3a5f');
+            document.documentElement.style.setProperty('--phase-stroke', '#3b82f6');
+            document.documentElement.style.setProperty('--phase-text', '#93c5fd');
+            document.documentElement.style.setProperty('--panel-bg', '#1e293b');
+        }
+
+        const PORTFOLIO_URL = 'https://georginaydenov.github.io/Georgi-Naydenov-Portfolio/';
+        const TOGAF_SECTION = PORTFOLIO_URL + '?activeCategory=artifacts&activeSection=ai-prototypes&activeTopic=togaf-ea';
+
+        const PHASES = {
+            prelim: {
+                title: 'Preliminary Phase',
+                desc: 'Prepares the organization for the TOGAF ADM journey. Defines the architecture capability, governance model, and tailoring of TOGAF for the organization\'s specific context and principles.',
+                deliverables: ['Organizational Model for EA', 'Tailored Architecture Framework', 'Architecture Principles', 'Architecture Repository Structure']
+            },
+            a: {
+                title: 'Phase A: Architecture Vision',
+                desc: 'Establishes the scope, constraints, and expectations for the architecture engagement. Creates the high-level vision of the capabilities and business value to be delivered.',
+                deliverables: ['Architecture Vision Document', 'Statement of Architecture Work', 'Refined Statements of Business Principles', 'Business Scenarios']
+            },
+            b: {
+                title: 'Phase B: Business Architecture',
+                desc: 'Develops the Target Business Architecture that describes how the enterprise needs to operate to achieve the business goals and respond to strategic drivers.',
+                deliverables: ['Baseline Business Architecture', 'Target Business Architecture', 'Gap Analysis', 'Business Architecture Report']
+            },
+            c: {
+                title: 'Phase C: Information Systems Architecture',
+                desc: 'Develops the Target Information Systems Architecture — both Data Architecture and Application Architecture — to support the agreed Target Business Architecture.',
+                deliverables: ['Baseline/Target Data Architecture', 'Baseline/Target Application Architecture', 'Data Entity/Data Component Catalog', 'Application Portfolio Catalog']
+            },
+            d: {
+                title: 'Phase D: Technology Architecture',
+                desc: 'Develops the Target Technology Architecture that enables the logical and physical application and data components and the Architecture Vision to be delivered.',
+                deliverables: ['Baseline/Target Technology Architecture', 'Technology Portfolio Catalog', 'Technology Standards Forecast', 'Gap Analysis']
+            },
+            e: {
+                title: 'Phase E: Opportunities & Solutions',
+                desc: 'Generates the initial complete version of the Architecture Roadmap and determines whether an incremental approach is needed, and if so identifies Transition Architectures.',
+                deliverables: ['Architecture Roadmap', 'Transition Architecture', 'Implementation and Migration Plan', 'Capability Assessment']
+            },
+            f: {
+                title: 'Phase F: Migration Planning',
+                desc: 'Finalizes the Architecture Roadmap and supporting Implementation and Migration Plan, ensuring alignment with enterprise approaches to change.',
+                deliverables: ['Finalized Architecture Roadmap', 'Implementation and Migration Plan', 'Architecture Contract', 'Transition Architecture']
+            },
+            g: {
+                title: 'Phase G: Implementation Governance',
+                desc: 'Provides architectural oversight of the implementation. Ensures conformance with the target architecture by governing the implementation projects.',
+                deliverables: ['Architecture Contract', 'Compliance Assessments', 'Architecture Compliance Reports', 'Change Requests']
+            },
+            h: {
+                title: 'Phase H: Architecture Change Management',
+                desc: 'Establishes procedures for managing change to the new architecture. Monitors the business and technology environments for changes requiring a new architecture cycle.',
+                deliverables: ['Architecture Updates', 'Change Requests for New Work', 'Architecture Compliance Assessment', 'New Request for Architecture Work']
+            },
+            req: {
+                title: 'Requirements Management',
+                desc: 'A continuous process that manages architecture requirements throughout all ADM phases. Ensures that any changes to requirements are controlled and that impacts are assessed.',
+                deliverables: ['Requirements Impact Assessment', 'Architecture Requirements Specification', 'Requirements Traceability Matrix', 'Updated Architecture Repository']
+            }
+        };
+
+        let activePhase = null;
+
+        function selectPhase(id) {
+            // Update active state
+            document.querySelectorAll('.phase, .center-hub, .mobile-phase').forEach(el => el.classList.remove('active'));
+            if (id !== activePhase) {
+                const svgEl = document.getElementById('p-' + id);
+                if (svgEl) svgEl.classList.add('active');
+                const mobileEls = document.querySelectorAll('.mobile-phase');
+                mobileEls.forEach((el, i) => {
+                    const phaseIds = ['prelim','a','b','c','d','e','f','g','h','req'];
+                    if (phaseIds[i] === id) el.classList.add('active');
+                });
+                showPanel(id);
+                activePhase = id;
+            } else {
+                closePanel();
+            }
+            // PostMessage to parent
+            window.parent.postMessage({ type: 'portfolio-navigate', category: 'artifacts', section: 'ai-prototypes', topic: 'togaf-ea' }, '*');
+        }
+
+        function showPanel(id) {
+            const data = PHASES[id];
+            if (!data) return;
+            document.getElementById('panel-title').textContent = data.title;
+            document.getElementById('panel-desc').textContent = data.desc;
+            const delivHtml = '<h4>Key Deliverables</h4><ul>' + data.deliverables.map(d => `<li>${d}</li>`).join('') + '</ul>';
+            document.getElementById('panel-deliverables').innerHTML = delivHtml;
+            document.getElementById('panel-link').href = TOGAF_SECTION;
+            document.getElementById('panel').classList.add('visible');
+        }
+
+        function closePanel() {
+            document.getElementById('panel').classList.remove('visible');
+            document.querySelectorAll('.phase, .center-hub, .mobile-phase').forEach(el => el.classList.remove('active'));
+            activePhase = null;
+        }
+
+        // Keyboard nav
+        document.querySelectorAll('.phase, .center-hub').forEach(el => {
+            el.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    el.click();
+                }
+                if (e.key === 'Escape') closePanel();
+            });
+        });
+    </script>
+</body>
+</html>

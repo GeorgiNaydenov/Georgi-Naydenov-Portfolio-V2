@@ -1,0 +1,61 @@
+---
+layout: default
+---
+<article class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <header class="mb-8">
+        <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-4 text-slate-900 dark:text-white">
+            {{ page.title }}
+        </h1>
+        <div class="flex flex-wrap items-center gap-4 text-sm text-slate-500">
+            <time datetime="{{ page.date | date_to_xmlschema }}">
+                {{ page.date | date: "%B %d, %Y" }}
+            </time>
+            {% if page.categories.size > 0 %}
+            <span>·</span>
+            {% for cat in page.categories %}
+            <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded text-xs font-semibold">{{ cat }}</span>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="prose dark:prose-invert prose-lg max-w-none">
+        {{ content }}
+    </div>
+
+    <!-- Related portfolio items -->
+    {% if page.portfolio_items %}
+    <aside class="mt-12 p-6 bg-slate-100 dark:bg-slate-800 rounded-xl">
+        <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4">Related Portfolio Items</h3>
+        <ul class="space-y-2">
+        {% for item_id in page.portfolio_items %}
+            {% assign item = site.data.portfolio | where: "id", item_id | first %}
+            {% if item %}
+            <li>
+                <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer"
+                   class="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+                    {{ item.title }}
+                </a>
+                <span class="text-xs text-slate-500">— {{ item.description | truncate: 80 }}</span>
+            </li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+    </aside>
+    {% endif %}
+
+    <!-- Navigation between posts -->
+    <nav class="mt-12 flex justify-between border-t border-slate-200 dark:border-slate-700 pt-6">
+        {% if page.previous.url %}
+        <a href="{{ page.previous.url | relative_url }}" class="text-blue-600 dark:text-blue-400 hover:underline">
+            ← {{ page.previous.title | truncate: 40 }}
+        </a>
+        {% else %}<span></span>{% endif %}
+
+        {% if page.next.url %}
+        <a href="{{ page.next.url | relative_url }}" class="text-blue-600 dark:text-blue-400 hover:underline">
+            {{ page.next.title | truncate: 40 }} →
+        </a>
+        {% else %}<span></span>{% endif %}
+    </nav>
+</article>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Analytics — Georgi Naydenov Portfolio</title>
+    <style>
+        :root {
+            --bg: #ffffff; --bg2: #f8fafc; --text: #0f172a; --text2: #475569;
+            --border: #e2e8f0; --accent: #2563eb; --card-bg: #ffffff;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root { --bg: #0f172a; --bg2: #1e293b; --text: #f1f5f9; --text2: #94a3b8; --border: #334155; --card-bg: #1e293b; }
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg); color: var(--text); font-family: system-ui,-apple-system,sans-serif; }
+        header { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-bottom: 1px solid var(--border); }
+        h1 { font-size: 1rem; font-weight: 700; }
+        #theme-btn { padding: 6px 12px; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 0.78rem; cursor: pointer; }
+        #loading { text-align: center; padding: 60px; color: var(--text2); }
+        #dashboard { display: none; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; padding: 16px; }
+        .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+        .card h3 { font-size: 0.85rem; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+        .chart-wrap { position: relative; height: 200px; }
+        /* Summary table */
+        #summary { padding: 0 16px 16px; }
+        #summary h2 { font-size: 0.9rem; font-weight: 700; margin-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        th { background: var(--bg2); padding: 8px 12px; text-align: left; border: 1px solid var(--border); font-weight: 600; color: var(--text2); }
+        td { padding: 7px 12px; border: 1px solid var(--border); color: var(--text); }
+        tr:nth-child(even) td { background: var(--bg2); }
+        td a { color: var(--accent); text-decoration: none; }
+        td a:hover { text-decoration: underline; }
+        .stat-chip { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 0.72rem; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Portfolio Analytics Dashboard</h1>
+        <button id="theme-btn" onclick="toggleTheme()" aria-label="Toggle theme">Toggle Dark</button>
+    </header>
+    <div id="loading">Loading portfolio data…</div>
+    <div id="dashboard">
+        <div class="grid">
+            <div class="card"><h3>Category Distribution</h3><div class="chart-wrap"><canvas id="cat-chart"></canvas></div></div>
+            <div class="card"><h3>Platform Split</h3><div class="chart-wrap"><canvas id="plat-chart"></canvas></div></div>
+            <div class="card"><h3>Subcategory Breakdown</h3><div class="chart-wrap"><canvas id="sub-chart"></canvas></div></div>
+            <div class="card"><h3>Artifact Sections</h3><div class="chart-wrap"><canvas id="sec-chart"></canvas></div></div>
+        </div>
+        <div id="summary">
+            <h2>Items Summary</h2>
+            <table id="items-table">
+                <thead><tr><th>Title</th><th>Category</th><th>Section</th><th>Platform</th></tr></thead>
+                <tbody id="table-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+    <script>
+        const qp = new URLSearchParams(location.search);
+        let isDark = qp.get('theme') === 'dark' || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+        function applyTheme(dark) {
+            const root = document.documentElement;
+            if (dark) {
+                root.style.setProperty('--bg', '#0f172a');
+                root.style.setProperty('--bg2', '#1e293b');
+                root.style.setProperty('--text', '#f1f5f9');
+                root.style.setProperty('--text2', '#94a3b8');
+                root.style.setProperty('--border', '#334155');
+                root.style.setProperty('--card-bg', '#1e293b');
+            } else {
+                root.style.setProperty('--bg', '#ffffff');
+                root.style.setProperty('--bg2', '#f8fafc');
+                root.style.setProperty('--text', '#0f172a');
+                root.style.setProperty('--text2', '#475569');
+                root.style.setProperty('--border', '#e2e8f0');
+                root.style.setProperty('--card-bg', '#ffffff');
+            }
+        }
+        applyTheme(isDark);
+
+        function toggleTheme() { isDark = !isDark; applyTheme(isDark); renderCharts(window._data); }
+
+        const DATA_URL = '../_data/portfolio.json';
+        const BASE = 'https://georginaydenov.github.io/Georgi-Naydenov-Portfolio/';
+
+        const COLORS = {
+            artifacts: '#6366f1', articles: '#10b981', posts: '#3b82f6', appearances: '#8b5cf6',
+            claude: '#f97316', notebooklm: '#22c55e', none: '#94a3b8',
+            'ai-prototypes': '#6366f1', 'study-guides': '#f59e0b', 'proof-of-concepts': '#f43f5e'
+        };
+
+        let charts = {};
+
+        async function loadData() {
+            try {
+                const res = await fetch(DATA_URL);
+                if (!res.ok) throw new Error('Failed');
+                return await res.json();
+            } catch {
+                // Fallback: return minimal sample data
+                return [];
+            }
+        }
+
+        function getTextColor() { return isDark ? '#94a3b8' : '#475569'; }
+        function getGridColor() { return isDark ? '#334155' : '#e2e8f0'; }
+
+        function baseChartOpts() {
+            return {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { labels: { color: getTextColor(), font: { size: 11 } } } }
+            };
+        }
+
+        function renderCharts(data) {
+            // Destroy existing
+            Object.values(charts).forEach(c => c.destroy());
+            charts = {};
+
+            const textColor = getTextColor();
+            const gridColor = getGridColor();
+
+            // 1. Category donut
+            const catCounts = {};
+            data.forEach(d => { catCounts[d.category] = (catCounts[d.category] || 0) + 1; });
+            charts.cat = new Chart(document.getElementById('cat-chart'), {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(catCounts).map(k => k.charAt(0).toUpperCase() + k.slice(1)),
+                    datasets: [{ data: Object.values(catCounts), backgroundColor: Object.keys(catCounts).map(k => COLORS[k] || '#94a3b8'), borderWidth: 2 }]
+                },
+                options: { ...baseChartOpts(), onClick: (e, el) => el[0] && filterTable(data, 'category', Object.keys(catCounts)[el[0].index]) }
+            });
+
+            // 2. Platform bar
+            const platCounts = { Claude: 0, NotebookLM: 0, Other: 0 };
+            data.forEach(d => {
+                if (d.platform === 'claude') platCounts.Claude++;
+                else if (d.platform === 'notebooklm') platCounts.NotebookLM++;
+                else platCounts.Other++;
+            });
+            charts.plat = new Chart(document.getElementById('plat-chart'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(platCounts),
+                    datasets: [{ data: Object.values(platCounts), backgroundColor: [COLORS.claude, COLORS.notebooklm, COLORS.none], borderRadius: 6 }]
+                },
+                options: { ...baseChartOpts(), plugins: { legend: { display: false } }, scales: { x: { ticks: { color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor }, grid: { color: gridColor } } } }
+            });
+
+            // 3. Subcategory heatmap (horizontal bar)
+            const subCounts = {};
+            data.forEach(d => { if (d.subCategory) subCounts[d.subCategory] = (subCounts[d.subCategory] || 0) + 1; });
+            const subLabels = Object.keys(subCounts).sort((a,b) => subCounts[b] - subCounts[a]).slice(0, 8);
+            charts.sub = new Chart(document.getElementById('sub-chart'), {
+                type: 'bar',
+                data: {
+                    labels: subLabels.map(l => l.replace(/-/g, ' ')),
+                    datasets: [{ data: subLabels.map(k => subCounts[k]), backgroundColor: '#6366f1', borderRadius: 4 }]
+                },
+                options: { ...baseChartOpts(), indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { ticks: { color: textColor }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: { size: 9 } }, grid: { color: gridColor } } } }
+            });
+
+            // 4. Artifact sections stacked
+            const artifacts = data.filter(d => d.category === 'artifacts');
+            const secCounts = {};
+            artifacts.forEach(d => { const s = d.section || 'other'; secCounts[s] = (secCounts[s] || 0) + 1; });
+            charts.sec = new Chart(document.getElementById('sec-chart'), {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(secCounts).map(k => k.replace(/-/g, ' ')),
+                    datasets: [{ data: Object.values(secCounts), backgroundColor: Object.keys(secCounts).map(k => COLORS[k] || '#94a3b8'), borderWidth: 2 }]
+                },
+                options: { ...baseChartOpts(), onClick: (e, el) => el[0] && filterTable(data, 'section', Object.keys(secCounts)[el[0].index]) }
+            });
+
+            filterTable(data, null, null);
+        }
+
+        function filterTable(data, field, value) {
+            const filtered = field ? data.filter(d => d[field] === value) : data.slice(0, 30);
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = filtered.slice(0, 50).map(d => `
+                <tr>
+                    <td><a href="${d.url || '#'}" target="_blank" rel="noopener">${escHtml(d.title)}</a></td>
+                    <td><span class="stat-chip" style="background:${COLORS[d.category]}22;color:${COLORS[d.category]}">${d.category}</span></td>
+                    <td>${d.section ? d.section.replace(/-/g,' ') : '—'}</td>
+                    <td>${d.platform || '—'}</td>
+                </tr>`).join('');
+        }
+
+        function escHtml(str) { return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+        (async () => {
+            const data = await loadData();
+            window._data = data;
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            renderCharts(data);
+        })();
+    </script>
+</body>
+</html>

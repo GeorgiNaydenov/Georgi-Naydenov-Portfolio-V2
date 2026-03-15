@@ -1,0 +1,48 @@
+/**
+ * overrides.css — Browser overrides and custom utilities
+ * @agent Style Architect (Agent 4)
+ */
+
+/* ── Smooth Scrolling ── */
+html {
+    scroll-behavior: smooth;
+}
+
+/* ── Hidden Scrollbar ── */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* ── Link Underline Animation ── */
+.link-underline {
+    position: relative;
+    text-decoration: none;
+}
+.link-underline::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background-color: currentColor;
+    transform-origin: bottom right;
+    transition: transform 0.25s ease-out;
+}
+.link-underline:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+}
+
+/* ── Selection Styling ── */
+::selection {
+    background-color: var(--color-brand-light, #dbeafe);
+}
+.dark ::selection {
+    background-color: rgba(96, 165, 250, 0.3);
+}

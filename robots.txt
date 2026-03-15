@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Disallow build artifacts
+Disallow: /_site/
+Disallow: /.jekyll-cache/
+Disallow: /vendor/
+
+Sitemap: https://georginaydenov.github.io/Georgi-Naydenov-Portfolio/sitemap.xml

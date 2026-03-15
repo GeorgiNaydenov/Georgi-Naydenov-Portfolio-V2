@@ -1,0 +1,97 @@
+# ============================================================
+# Georgi Naydenov Portfolio — Jekyll Configuration
+# ============================================================
+# This config enables Jekyll to process blog content while
+# leaving the React SPA portfolio untouched.
+# ============================================================
+
+# ── Site Settings ──
+title: "Georgi Naydenov"
+description: "Portfolio & Knowledge Library — AI Prototypes, Study Guides, Articles, and Public Appearances"
+url: "https://georginaydenov.github.io"
+baseurl: "/Georgi-Naydenov-Portfolio"
+author:
+  name: "Georgi Naydenov"
+  linkedin: "https://www.linkedin.com/in/georgi-naydenov/"
+  github: "https://github.com/GeorgiNaydenov"
+
+# ── Build Settings ──
+markdown: kramdown
+highlighter: rouge
+permalink: /blog/:year/:month/:day/:title/
+
+kramdown:
+  input: GFM
+  hard_wrap: false
+  syntax_highlighter: rouge
+
+# ── Timezone ──
+timezone: Europe/Sofia
+
+# ── Plugins (GitHub Pages whitelisted) ──
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+  - jekyll-paginate
+  - jekyll-redirect-from
+  - jekyll-optional-front-matter
+
+# ── Pagination ──
+paginate: 6
+paginate_path: "/blog/page:num/"
+
+# ── Collections ──
+collections:
+  portfolio:
+    output: false
+
+# ── Include/Exclude ──
+include:
+  - _data
+
+exclude:
+  - README.md
+  - LICENSE
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - portfolio-dev-plan
+  - scripts
+  - "*.gemspec"
+  - ARCHITECTURE.md
+  - DATA-SCHEMA.md
+  - STYLE-GUIDE.md
+  - QA-REPORT.md
+  - dev-plan-v3-executable.md
+
+# ── Defaults ──
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+      author: "Georgi Naydenov"
+  - scope:
+      path: "blog"
+    values:
+      layout: "blog"
+
+# ── Feed ──
+feed:
+  path: /feed.xml
+  posts_limit: 20
+
+# ── SEO ──
+twitter:
+  card: summary_large_image
+social:
+  name: "Georgi Naydenov"
+  links:
+    - "https://www.linkedin.com/in/georgi-naydenov/"
+    - "https://github.com/GeorgiNaydenov"
+
+# ── Custom Variables ──
+portfolio_data: "portfolio"

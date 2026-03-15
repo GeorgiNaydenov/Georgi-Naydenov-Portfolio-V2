@@ -1,0 +1,37 @@
+{
+  "badges": {
+    "claude": { "path": "/assets/badges/claude.svg", "width": 24, "height": 24, "label": "Claude AI" },
+    "notebooklm": { "path": "/assets/badges/notebooklm.svg", "width": 24, "height": 24, "label": "NotebookLM" },
+    "google-docs": { "path": "/assets/badges/google-docs.svg", "width": 24, "height": 24, "label": "Google Docs" },
+    "google-slides": { "path": "/assets/badges/google-slides.svg", "width": 24, "height": 24, "label": "Google Slides" },
+    "pdf": { "path": "/assets/badges/pdf.svg", "width": 24, "height": 24, "label": "PDF" },
+    "youtube": { "path": "/assets/badges/youtube.svg", "width": 24, "height": 24, "label": "YouTube" },
+    "linkedin": { "path": "/assets/badges/linkedin.svg", "width": 24, "height": 24, "label": "LinkedIn" },
+    "iiba": { "path": "/assets/badges/iiba.svg", "width": 24, "height": 24, "label": "IIBA" },
+    "togaf": { "path": "/assets/badges/togaf.svg", "width": 24, "height": 24, "label": "TOGAF" },
+    "github-pages": { "path": "/assets/badges/github-pages.svg", "width": 24, "height": 24, "label": "GitHub Pages" }
+  },
+  "og": {
+    "default": { "path": "/assets/og/default.png", "width": 1200, "height": 630 },
+    "artifacts": { "path": "/assets/og/artifacts.png", "width": 1200, "height": 630 },
+    "articles": { "path": "/assets/og/articles.png", "width": 1200, "height": 630 },
+    "posts": { "path": "/assets/og/posts.png", "width": 1200, "height": 630 },
+    "appearances": { "path": "/assets/og/appearances.png", "width": 1200, "height": 630 }
+  },
+  "favicons": {
+    "svg": "/assets/favicon.svg",
+    "ico": "/assets/favicon.ico",
+    "apple": "/assets/apple-touch-icon.png",
+    "16": "/assets/favicon-16x16.png",
+    "32": "/assets/favicon-32x32.png"
+  },
+  "thumbnails": {
+    "ai-prototypes": { "path": "/assets/thumbnails/ai-prototypes-placeholder.svg", "width": 400, "height": 300 },
+    "study-guides": { "path": "/assets/thumbnails/study-guides-placeholder.svg", "width": 400, "height": 300 },
+    "proof-of-concepts": { "path": "/assets/thumbnails/proof-of-concepts-placeholder.svg", "width": 400, "height": 300 },
+    "articles": { "path": "/assets/thumbnails/articles-placeholder.svg", "width": 400, "height": 300 },
+    "posts": { "path": "/assets/thumbnails/posts-placeholder.svg", "width": 400, "height": 300 },
+    "appearances": { "path": "/assets/thumbnails/appearances-placeholder.svg", "width": 400, "height": 300 }
+  },
+  "pattern": "/assets/hero-pattern.svg"
+}

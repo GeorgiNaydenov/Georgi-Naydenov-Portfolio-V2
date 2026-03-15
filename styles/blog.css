@@ -1,0 +1,202 @@
+/**
+ * blog.css — Blog typography and post styling
+ * @agent Style Architect (Agent 4) / Jekyll Integrator (Agent 0)
+ *
+ * Provides prose-quality typography for Jekyll blog posts.
+ * Inherits token values from tokens.css.
+ */
+
+/* ── Base Prose Container ── */
+.prose {
+    color: var(--text-primary, #0f172a);
+    max-width: 65ch;
+    line-height: 1.75;
+    font-size: 1.0625rem;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4 {
+    color: var(--text-primary, #0f172a);
+    font-weight: 700;
+    line-height: 1.3;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+.prose h1 { font-size: 2rem; }
+.prose h2 { font-size: 1.5rem; border-bottom: 1px solid var(--border-default, #e2e8f0); padding-bottom: 0.5rem; }
+.prose h3 { font-size: 1.25rem; }
+.prose h4 { font-size: 1.1rem; }
+
+.prose p {
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.prose a {
+    color: var(--color-brand, #2563eb);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.2s;
+}
+
+.prose a:hover {
+    color: var(--color-brand-hover, #1d4ed8);
+}
+
+.prose strong {
+    font-weight: 700;
+    color: var(--text-primary, #0f172a);
+}
+
+.prose em {
+    font-style: italic;
+}
+
+.prose ul, .prose ol {
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+    padding-left: 1.75rem;
+}
+
+.prose ul { list-style-type: disc; }
+.prose ol { list-style-type: decimal; }
+.prose li { margin-top: 0.5rem; margin-bottom: 0.5rem; }
+
+.prose blockquote {
+    border-left: 4px solid var(--color-brand, #2563eb);
+    padding-left: 1.25rem;
+    margin: 1.5rem 0;
+    color: var(--text-secondary, #475569);
+    font-style: italic;
+}
+
+.prose code {
+    background: var(--surface-tertiary, #f1f5f9);
+    border: 1px solid var(--border-default, #e2e8f0);
+    border-radius: 4px;
+    padding: 0.1em 0.4em;
+    font-size: 0.875em;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+}
+
+.prose pre {
+    background: var(--surface-secondary, #f8fafc);
+    border: 1px solid var(--border-default, #e2e8f0);
+    border-radius: 8px;
+    padding: 1.25rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+}
+
+.prose pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.875rem;
+}
+
+.prose img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 1.5rem auto;
+}
+
+.prose hr {
+    border: none;
+    border-top: 1px solid var(--border-default, #e2e8f0);
+    margin: 2rem 0;
+}
+
+.prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.9375rem;
+}
+
+.prose th {
+    background: var(--surface-tertiary, #f1f5f9);
+    font-weight: 600;
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-default, #e2e8f0);
+}
+
+.prose td {
+    padding: 0.625rem 1rem;
+    border: 1px solid var(--border-default, #e2e8f0);
+    vertical-align: top;
+}
+
+.prose tr:nth-child(even) td {
+    background: var(--surface-secondary, #f8fafc);
+}
+
+/* ── Dark Mode Prose ── */
+.dark .prose {
+    color: var(--text-primary, #f1f5f9);
+}
+
+.dark .prose h1,
+.dark .prose h2,
+.dark .prose h3,
+.dark .prose h4,
+.dark .prose strong {
+    color: var(--text-primary, #f1f5f9);
+}
+
+.dark .prose h2 {
+    border-bottom-color: var(--border-default, #334155);
+}
+
+.dark .prose a {
+    color: #60a5fa;
+}
+
+.dark .prose a:hover {
+    color: #93c5fd;
+}
+
+.dark .prose blockquote {
+    border-left-color: #60a5fa;
+    color: var(--text-secondary, #94a3b8);
+}
+
+.dark .prose code {
+    background: var(--surface-tertiary, #334155);
+    border-color: var(--border-default, #334155);
+    color: #f1f5f9;
+}
+
+.dark .prose pre {
+    background: var(--surface-secondary, #0f172a);
+    border-color: var(--border-default, #334155);
+}
+
+.dark .prose hr {
+    border-top-color: var(--border-default, #334155);
+}
+
+.dark .prose th {
+    background: var(--surface-tertiary, #334155);
+    border-color: var(--border-default, #334155);
+    color: var(--text-primary, #f1f5f9);
+}
+
+.dark .prose td {
+    border-color: var(--border-default, #334155);
+}
+
+.dark .prose tr:nth-child(even) td {
+    background: var(--surface-secondary, #0f172a);
+}
+
+/* ── Rouge Syntax Highlighting (for code blocks) ── */
+.highlight .k  { color: #7c3aed; font-weight: bold; } /* keyword */
+.highlight .s  { color: #059669; } /* string */
+.highlight .c  { color: #94a3b8; font-style: italic; } /* comment */
+.highlight .n  { color: #0f172a; } /* name */
+.highlight .mi { color: #ea580c; } /* integer */
+.highlight .kc { color: #7c3aed; } /* keyword constant */
+
+.dark .highlight .n  { color: #f1f5f9; }

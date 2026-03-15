@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls \"C:\\\\Users\\\\User\\\\Desktop\\\\Personal Website\\\\components\"\" 2>/dev/null; echo \"---CONFIG---\"; cat \"C:UsersUserDesktopPersonal Website_config.yml \")",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(find 'C:/Users/User/Desktop/Personal Website' -name *.jpg -o -name *.jpeg -o -name *.png)",
+      "Bash(grep ^174[0-9])",
+      "Bash(ls -la C:/Users/User/Downloads/*.jpeg C:/Users/User/Downloads/*.jpg)",
+      "Bash(sort -k6,7)",
+      "Bash(where gh:*)",
+      "Bash(winget list:*)",
+      "Bash(git config:*)",
+      "Bash(winget install:*)",
+      "Bash(export PATH=\"$PATH:/c/Program Files/GitHub CLI\")",
+      "Bash(gh auth:*)"
+    ]
+  }
+}

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certification & Skill Map — Georgi Naydenov Portfolio</title>
+    <style>
+        :root {
+            --bg: #ffffff; --bg2: #f8fafc; --text: #0f172a; --text2: #475569;
+            --border: #e2e8f0; --accent: #2563eb; --panel-bg: #ffffff;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root { --bg: #0f172a; --bg2: #1e293b; --text: #f1f5f9; --text2: #94a3b8; --border: #334155; --panel-bg: #1e293b; }
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg); color: var(--text); font-family: system-ui,-apple-system,sans-serif; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
+        #topbar { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--border); }
+        h1 { font-size: 0.95rem; font-weight: 700; flex: 1; }
+        #search { padding: 6px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg2); color: var(--text); font-size: 0.8rem; width: 180px; outline: none; }
+        #search:focus { border-color: var(--accent); }
+        #reset-btn { padding: 6px 10px; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; color: var(--text2); font-size: 0.75rem; cursor: pointer; }
+        #main { display: flex; flex: 1; overflow: hidden; }
+        #canvas-wrap { flex: 1; overflow: hidden; position: relative; }
+        svg#graph { width: 100%; height: 100%; }
+        .node { cursor: pointer; }
+        .node circle, .node rect { transition: all 0.2s; }
+        .node text { pointer-events: none; font-size: 10px; text-anchor: middle; fill: var(--text); }
+        .link { stroke: var(--border); stroke-width: 1.5; fill: none; opacity: 0.6; }
+        .dimmed { opacity: 0.15; }
+        /* Sidebar */
+        #sidebar { width: 240px; border-left: 1px solid var(--border); background: var(--panel-bg); overflow-y: auto; padding: 16px; display: none; }
+        #sidebar.open { display: block; }
+        #sb-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; color: var(--accent); }
+        #sb-desc { font-size: 0.8rem; color: var(--text2); line-height: 1.5; margin-bottom: 12px; }
+        #sb-links h4 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text2); margin-bottom: 6px; }
+        #sb-links a { display: block; font-size: 0.78rem; color: var(--accent); text-decoration: none; padding: 4px 0; border-bottom: 1px solid var(--border); }
+        #sb-links a:hover { text-decoration: underline; }
+        #sb-close { background: none; border: none; float: right; font-size: 1rem; cursor: pointer; color: var(--text2); }
+        /* Legend */
+        #legend { padding: 8px 16px; border-top: 1px solid var(--border); display: flex; gap: 16px; font-size: 0.72rem; color: var(--text2); }
+        .legend-item { display: flex; align-items: center; gap: 5px; }
+        .legend-circle { width: 10px; height: 10px; border-radius: 50%; }
+    </style>
+</head>
+<body>
+    <div id="topbar">
+        <h1>Certification & Skill Map</h1>
+        <input id="search" type="text" placeholder="Search nodes…" aria-label="Search nodes"/>
+        <button id="reset-btn" onclick="resetGraph()" aria-label="Reset view">Reset</button>
+    </div>
+    <div id="main">
+        <div id="canvas-wrap">
+            <svg id="graph" aria-label="Certification and Skill Network Graph"></svg>
+        </div>
+        <div id="sidebar" role="complementary" aria-live="polite">
+            <button id="sb-close" onclick="closeSidebar()" aria-label="Close sidebar">✕</button>
+            <div id="sb-title"></div>
+            <p id="sb-desc"></p>
+            <div id="sb-links"></div>
+        </div>
+    </div>
+    <div id="legend">
+        <div class="legend-item"><div class="legend-circle" style="background:#2563eb;width:14px;height:14px;"></div> Certification</div>
+        <div class="legend-item"><div class="legend-circle" style="background:#7c3aed;"></div> Skill Domain</div>
+        <div class="legend-item"><div class="legend-circle" style="background:#059669;"></div> Knowledge Area</div>
+        <div class="legend-item"><div class="legend-circle" style="background:#c2410c;"></div> Platform</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+    <script>
+        // Theme from query param
+        const qp = new URLSearchParams(location.search);
+        if (qp.get('theme') === 'dark') {
+            document.documentElement.style.setProperty('--bg', '#0f172a');
+            document.documentElement.style.setProperty('--bg2', '#1e293b');
+            document.documentElement.style.setProperty('--text', '#f1f5f9');
+            document.documentElement.style.setProperty('--text2', '#94a3b8');
+            document.documentElement.style.setProperty('--border', '#334155');
+            document.documentElement.style.setProperty('--panel-bg', '#1e293b');
+        }
+
+        const BASE = 'https://georginaydenov.github.io/Georgi-Naydenov-Portfolio/';
+
+        // Graph data
+        const nodes = [
+            // Certifications (type: cert)
+            { id: 'cbap', label: 'CBAP®', type: 'cert', size: 28, color: '#2563eb', info: 'Certified Business Analysis Professional — the premier certification for Business Analysts from IIBA.', link: BASE + '?activeCategory=artifacts&activeSection=study-guides&activeTopic=cbap' },
+            { id: 'pmp', label: 'PMP®', type: 'cert', size: 26, color: '#2563eb', info: 'Project Management Professional — globally recognized certification from PMI.', link: BASE + '?activeCategory=artifacts' },
+            { id: 'togaf', label: 'TOGAF® EA', type: 'cert', size: 26, color: '#2563eb', info: 'The Open Group Architecture Framework — Enterprise Architecture Practitioner certification.', link: BASE + '?activeCategory=artifacts&activeSection=ai-prototypes&activeTopic=togaf-ea' },
+            // Skill domains (type: domain)
+            { id: 'ba-domain', label: 'Business Analysis', type: 'domain', size: 20, color: '#7c3aed', info: 'Core BA competencies: requirements elicitation, analysis, stakeholder management, and solution evaluation.' },
+            { id: 'ea-domain', label: 'Enterprise Architecture', type: 'domain', size: 20, color: '#7c3aed', info: 'Holistic approach to designing and aligning business and IT capabilities with strategic objectives.' },
+            { id: 'ai-domain', label: 'AI & Automation', type: 'domain', size: 20, color: '#7c3aed', info: 'Applied AI using Large Language Models and automation tools to augment professional practice.' },
+            { id: 'agile-domain', label: 'Agile / Scrum', type: 'domain', size: 18, color: '#7c3aed', info: 'Agile methodologies, Scrum framework, and iterative delivery practices.' },
+            // Knowledge areas (type: ka)
+            { id: 'req-mgmt', label: 'Requirements Mgmt', type: 'ka', size: 14, color: '#059669', info: 'Planning, eliciting, analysing, tracing, and validating requirements.' },
+            { id: 'stakeholder', label: 'Stakeholder Engagement', type: 'ka', size: 14, color: '#059669', info: 'Identifying, analysing, and collaborating with project stakeholders.' },
+            { id: 'adm', label: 'ADM Phases', type: 'ka', size: 14, color: '#059669', info: 'TOGAF Architecture Development Method — the iterative cycle from Preliminary through Change Management.' },
+            { id: 'ea-domains', label: 'Architecture Domains', type: 'ka', size: 14, color: '#059669', info: 'Business, Data, Application, and Technology architecture layers.' },
+            { id: 'llm', label: 'LLM Prompting', type: 'ka', size: 13, color: '#059669', info: 'Advanced prompt engineering and chain-of-thought techniques with Claude.' },
+            { id: 'notebooklm-ka', label: 'Research Synthesis', type: 'ka', size: 13, color: '#059669', info: 'Using NotebookLM and AI tools to synthesize complex documents and research.' },
+            // Platforms (type: platform)
+            { id: 'claude-p', label: 'Claude', type: 'platform', size: 16, color: '#c2410c', info: 'Anthropic\'s Claude — primary AI platform for prototyping and professional automation.', link: BASE + '?activeCategory=artifacts&activePlatform=claude' },
+            { id: 'notebooklm-p', label: 'NotebookLM', type: 'platform', size: 15, color: '#c2410c', info: 'Google\'s NotebookLM — used for deep research synthesis and certification study.', link: BASE + '?activeCategory=artifacts&activePlatform=notebooklm' }
+        ];
+
+        const links = [
+            { source: 'cbap', target: 'ba-domain' }, { source: 'cbap', target: 'req-mgmt' }, { source: 'cbap', target: 'stakeholder' },
+            { source: 'pmp', target: 'ba-domain' }, { source: 'pmp', target: 'agile-domain' },
+            { source: 'togaf', target: 'ea-domain' }, { source: 'togaf', target: 'adm' }, { source: 'togaf', target: 'ea-domains' },
+            { source: 'ba-domain', target: 'req-mgmt' }, { source: 'ba-domain', target: 'stakeholder' }, { source: 'ba-domain', target: 'agile-domain' },
+            { source: 'ea-domain', target: 'adm' }, { source: 'ea-domain', target: 'ea-domains' },
+            { source: 'ai-domain', target: 'llm' }, { source: 'ai-domain', target: 'notebooklm-ka' }, { source: 'ai-domain', target: 'ba-domain' },
+            { source: 'claude-p', target: 'ai-domain' }, { source: 'claude-p', target: 'llm' },
+            { source: 'notebooklm-p', target: 'ai-domain' }, { source: 'notebooklm-p', target: 'notebooklm-ka' }
+        ];
+
+        const svgEl = document.getElementById('graph');
+        const wrap = document.getElementById('canvas-wrap');
+
+        function draw() {
+            const W = wrap.clientWidth, H = wrap.clientHeight;
+            const svg = d3.select(svgEl).attr('viewBox', `0 0 ${W} ${H}`);
+            svg.selectAll('*').remove();
+
+            const g = svg.append('g');
+
+            // Zoom
+            const zoom = d3.zoom().scaleExtent([0.3, 3]).on('zoom', e => g.attr('transform', e.transform));
+            svg.call(zoom);
+
+            // Simulation
+            const sim = d3.forceSimulation(nodes)
+                .force('link', d3.forceLink(links).id(d => d.id).distance(80))
+                .force('charge', d3.forceManyBody().strength(-200))
+                .force('center', d3.forceCenter(W / 2, H / 2))
+                .force('collision', d3.forceCollide().radius(d => d.size + 8));
+
+            // Links
+            const link = g.append('g').selectAll('line').data(links).join('line').attr('class', 'link');
+
+            // Nodes
+            const node = g.append('g').selectAll('g').data(nodes).join('g')
+                .attr('class', 'node')
+                .call(d3.drag()
+                    .on('start', (e, d) => { if (!e.active) sim.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
+                    .on('drag', (e, d) => { d.fx = e.x; d.fy = e.y; })
+                    .on('end', (e, d) => { if (!e.active) sim.alphaTarget(0); d.fx = null; d.fy = null; })
+                )
+                .on('click', (e, d) => clickNode(d, node, link));
+
+            node.append('circle').attr('r', d => d.size).attr('fill', d => d.color).attr('opacity', 0.85).attr('stroke', '#ffffff').attr('stroke-width', 2);
+            node.append('text').text(d => d.label).attr('dy', d => d.size + 13).style('font-size', d => d.type === 'cert' ? '11px' : '9px').style('font-weight', d => d.type === 'cert' ? '700' : '400').attr('fill', getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || '#0f172a');
+
+            // Keyboard
+            node.attr('tabindex', 0).on('keydown', (e, d) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); clickNode(d, node, link); }});
+
+            sim.on('tick', () => {
+                link.attr('x1', d => d.source.x).attr('y1', d => d.source.y).attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+                node.attr('transform', d => `translate(${d.x},${d.y})`);
+            });
+
+            // Search
+            document.getElementById('search').oninput = function() {
+                const q = this.value.toLowerCase();
+                if (!q) { node.classed('dimmed', false); return; }
+                node.classed('dimmed', d => !d.label.toLowerCase().includes(q) && !d.id.includes(q));
+            };
+
+            window._sim = sim;
+            window._node = node;
+            window._link = link;
+        }
+
+        function clickNode(d, node, link) {
+            // Highlight connected
+            const connected = new Set([d.id]);
+            links.forEach(l => {
+                if (l.source.id === d.id) connected.add(l.target.id);
+                if (l.target.id === d.id) connected.add(l.source.id);
+            });
+            node.classed('dimmed', n => !connected.has(n.id));
+            link.classed('dimmed', l => l.source.id !== d.id && l.target.id !== d.id);
+            showSidebar(d);
+            // PostMessage
+            if (d.link) window.parent.postMessage({ type: 'portfolio-navigate', url: d.link }, '*');
+        }
+
+        function showSidebar(d) {
+            document.getElementById('sb-title').textContent = d.label;
+            document.getElementById('sb-desc').textContent = d.info || '';
+            const linksDiv = document.getElementById('sb-links');
+            if (d.link) {
+                linksDiv.innerHTML = '<h4>Portfolio Items</h4><a href="' + d.link + '" target="_blank" rel="noopener">View in Portfolio →</a>';
+            } else { linksDiv.innerHTML = ''; }
+            document.getElementById('sidebar').classList.add('open');
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            if (window._node) window._node.classed('dimmed', false);
+            if (window._link) window._link.classed('dimmed', false);
+        }
+
+        function resetGraph() {
+            if (window._sim) { window._sim.alpha(0.5).restart(); }
+            closeSidebar();
+            document.getElementById('search').value = '';
+        }
+
+        // Wait for D3 load
+        window.addEventListener('load', () => { draw(); window.addEventListener('resize', draw); });
+    </script>
+</body>
+</html>

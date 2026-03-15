@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" role="img" aria-labelledby="gdocs-title">
+  <title id="gdocs-title">Google Docs</title>
+  <path d="M14 2H7C5.9 2 5 2.9 5 4v16c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V8l-5-6z" fill="#4285f4"/>
+  <path d="M14 2l5 6h-5V2z" fill="#a8c7fa"/>
+  <path d="M8 13h8M8 16h6M8 10h4" stroke="white" stroke-width="1.2" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,21 @@
+# Jekyll
+_site/
+.jekyll-cache/
+.jekyll-metadata
+Gemfile.lock
+vendor/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Dev plan (internal tooling only)
+portfolio-dev-plan/
+
+# Local dev server log
+*.log
